@@ -1,0 +1,486 @@
+1.BFS
+
+graph = { "a" : ["c"],
+          "b" : ["c", "e"],
+          "c" : ["a", "b", "d", "e","f"],
+          "d" : ["c"],
+          "e" : ["c", "b"],
+          "f" : ["c"]
+        }
+visited = [] # List to keep track of visited nodes.
+queue = []     #Initialize a queue
+
+def bfs(visited, graph, node):
+  visited.append(node)
+  queue.append(node)
+  while queue:
+    s = queue.pop(0)
+    print (s, end = " ")
+
+    for i in graph[s]:
+      if i not in visited:
+        visited.append(i)
+        queue.append(i)
+
+# Driver Code
+bfs(visited, graph, "a")
+................................................
+2.DFS
+
+graph = { "a" : ["c"],
+          "b" : ["c", "e"],
+          "c" : ["a", "b", "d", "e","f"],
+          "d" : ["c"],
+          "e" : ["c", "b"],
+          "f" : ["c"]
+        }
+visited=[];
+def dfs(visited, graph, node):
+    if node not in visited:
+        print (node)
+        visited.append(node)
+        for i in graph[node]:
+            dfs(visited, graph, i)
+
+# Driver Code
+dfs(visited, graph, "a")
+................................................
+3.A star algorithm
+
+def aStarAlgo(start_node, stop_node):
+
+        open_set = set(start_node)
+        closed_set = set()
+        g = {} #store distance from starting node
+        parents = {}# parents contains an adjacency map of all nodes
+
+        #ditance of starting node from itself is zero
+        g[start_node] = 0
+        #start_node is root node i.e it has no parent nodes
+        #so start_node is set to its own parent node
+        parents[start_node] = start_node
+
+
+        while len(open_set) > 0:
+            n = None
+
+            #node with lowest f() is found
+            for v in open_set:
+                if n == None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                    n = v
+
+
+            if n == stop_node or Graph_nodes[n] == None:
+                pass
+            else:
+                for (m, weight) in get_neighbors(n):
+                    #nodes 'm' not in first and last set are added to first
+                    #n is set its parent
+                    if m not in open_set and m not in closed_set:
+                        open_set.add(m)
+                        parents[m] = n
+                        g[m] = g[n] + weight
+
+
+                    #for each node m,compare its distance from start i.e g(m) to the
+                    #from start through n node
+                    else:
+                        if g[m] > g[n] + weight:
+                            #update g(m)
+                            g[m] = g[n] + weight
+                            #change parent of m to n
+                            parents[m] = n
+
+                            #if m in closed set,remove and add to open
+                            if m in closed_set:
+                                closed_set.remove(m)
+                                open_set.add(m)
+
+            if n == None:
+                print('Path does not exist!')
+                return None
+
+            # if the current node is the stop_node
+            # then we begin reconstructin the path from it to the start_node
+            if n == stop_node:
+                path = []
+
+                while parents[n] != n:
+                    path.append(n)
+                    n = parents[n]
+
+                path.append(start_node)
+
+                path.reverse()
+
+
+                print('Path found:')
+                return path
+
+
+            # remove n from the open_list, and add it to closed_list
+            # because all of his neighbors were inspected
+
+            open_set.remove(n)
+            closed_set.add(n)
+
+        print('Path does not exist!')
+        return None
+
+#define fuction to return neighbor and its distance
+#from the passed node
+def get_neighbors(v):
+    if v in Graph_nodes:
+        return Graph_nodes[v]
+    else:
+        return None
+#for simplicity we ll consider heuristic distances given
+#and this function returns heuristic distance for all nodes
+def heuristic(n):
+        H_dist = {
+            'A': 11,
+            'B': 6,
+            'C': 99,
+            'D': 1,
+            'E': 7,
+            'G': 0,
+
+        }
+
+        return H_dist[n]
+
+#Describe your graph here
+Graph_nodes = {
+    'A': [('B', 2), ('E', 3)],
+    'B': [('C', 1),('G', 9)],
+    'C': None,
+    'E': [('D', 6)],
+    'D': [('G', 1)],
+
+}
+aStarAlgo('A', 'G')
+.................................
+4.Travelling sales man problem
+
+from sys import maxsize
+from itertools import permutations
+V = 4
+
+# implementation of traveling Salesman Problem
+def travellingSalesmanProblem(graph, s):
+
+    # store all vertex apart from source vertex
+    vertex = []
+    for i in range(V):
+        if i != s:
+            vertex.append(i)
+    #print(vertex)
+    # store minimum weight Hamiltonian Cycle
+    min_path = maxsize
+    #print('min_path=',min_path)
+    next_permutation=permutations(vertex)
+    #print(*next_permutation)
+    for i in next_permutation:
+
+        # store current Path weight(cost)
+        current_pathweight = 0
+
+        # compute current path weight
+        k = s
+
+        for j in i:
+            #print('j=',j)
+            current_pathweight += graph[k][j]
+            #print('current_pathweight1=',current_pathweight)
+            k = j
+            #print('k=',k)
+        current_pathweight += graph[k][s]
+        #print('graph[k][s]=',graph[k][s])
+        print('current_pathweight2=',current_pathweight)
+        # update minimum
+        min_path = min(min_path, current_pathweight)
+        print('min_path up to now =',min_path)
+    return min_path
+
+
+# Driver Code
+def main():
+
+    # matrix representation of graph
+    graph = [[0, 10, 15, 20], [10, 0, 35, 25],
+            [15, 35, 0, 30], [20, 25, 30, 0]]
+    s = 0
+    print('minimum distance=',travellingSalesmanProblem(graph, s))
+main()
+...........................................
+5.Waterjug problem
+
+#here we are using default dict which is used to initialize the dict elements with default value
+from collections import defaultdict
+
+#jug1 and jug2 have the max capacity of two jugs and target is the amount to be measured
+
+jug1=int(input("Enter the capacity of Jug1 :" ))
+jug2=int(input("Enter the capacity of Jug2 :" ))
+target=int(input("Enter the capacity to be measured within the range of Max(Jug1,Jug2) :"))
+
+# Initialize dictionary with
+
+# default value as false.
+visited = defaultdict(lambda: False)
+#visited = False
+
+# Recursive function which prints the intermediate steps to reach the final
+# solution and return boolean value  (True if solution is possible, otherwise False).
+
+# amountt1 and amount2 are the amount of water present  in both jugs at a certain point of time.
+def waterjugProblem(amount1, amount2):
+
+    # returns true if out goal is achieved else return False
+    if (amount1 == target and amount2 == 0) or (amount2 == target and amount1 == 0):
+        print(amount1,amount2)
+        return True
+
+    # Checks if we have already visited the
+    # combination or not. If not, then it proceeds further.
+    if visited[(amount1, amount2)] == False:
+        print(amount1,amount2)
+
+        # Changes the boolean value to True indicating we already visited this combination
+        visited[(amount1, amount2)] = True
+
+        # here we are exploring 6 possible Solution
+        #Empty the first jug completely
+        #Empty the second jug completely
+        #Fill the first jug
+        #Fill the second jug
+        #Fill the water from the second jug into the first jug until the first jug is full or the second jug has no water left
+        #Fill the water fr jug om the firstinto the second jug until the second jug is full or the first jug has no water left1.
+
+        return (waterjugProblem(0, amount2) or
+                waterjugProblem(amount1, 0) or
+                waterjugProblem(jug1, amount2) or
+                waterjugProblem(amount1, jug2) or
+                waterjugProblem(amount1 + min(amount2, (jug1-amount1)),
+                amount2 - min(amount2, (jug1-amount1))) or
+                waterjugProblem(amount1 - min(amount1, (jug2-amount2)),
+                amount2 + min(amount1, (jug2-amount2))))
+
+    #if the combination (amount1,amount2) is already visited return False as we do not perform same resursive call
+    else:
+        return False
+
+print("Steps: ")
+
+# Call the function and pass the
+# initial amount of water present in both jugs.
+waterjugProblem(0, 0)
+...............................................
+6. 8 queens problem
+
+#Number of queens
+print ("Enter the number of queens")
+N = int(input())
+#chessboard
+#NxN matrix with all elements 0
+board = [[0]*N for _ in range(N)]
+print(board)
+def is_attack(i, j):
+    #checking if there is a queen in row or column
+    for k in range(0,N):
+        if board[i][k]==1 or board[k][j]==1:
+            return True
+    #checking diagonals
+    for k in range(0,N):
+        for l in range(0,N):
+            if (k+l==i+j) or (k-l==i-j):
+                if board[k][l]==1:
+                    return True
+    return False
+
+def N_queen(n):
+    #if n is 0, solution found
+    if n==0:
+        return True
+    for i in range(0,N):
+        #print(i)
+        for j in range(0,N):
+            '''checking if we can place a queen here or not
+            queen will not be placed if the place is being attacked
+            or already occupied'''
+            if (not(is_attack(i,j))) and (board[i][j]!=1):
+                board[i][j] = 1
+                #recursion
+                #wether we can put the next queen with this arrangment or not
+                #print(board)
+                if N_queen(n-1)==True:
+                    return True
+                board[i][j] = 0
+
+    return False
+
+N_queen(N)
+for i in board:
+   print (i)
+.......................................
+7. Graph coloring problem
+
+
+colors = ['red', 'blue', 'green']
+states = ['Telangana','Andhra','Karnataka','TamilNadu','Kerala']
+neighbors = {}
+neighbors['Telangana'] = ['Andhra','Karnataka']
+neighbors['Andhra'] = ['Karnataka', 'Telangana','TamilNadu']
+neighbors['Karnataka'] = ['Andhra', 'Telangana','TamilNadu', 'Kerala']
+neighbors['TamilNadu'] = ['Andhra', 'Karnataka', 'Kerala']
+neighbors['Kerala'] = ['Karnataka', 'TamilNadu']
+colors_of_states = {}
+def issafe(state, color):
+    for neighbor in neighbors.get(state):
+        color_of_neighbor = colors_of_states.get(neighbor)
+        if color_of_neighbor == color:
+            return False
+    return True
+def get_color_for_state(state):
+    for color in colors:
+        if issafe(state, color):
+            return color
+
+def main():
+    for state in states:
+        colors_of_states[state] = get_color_for_state(state)
+    print (colors_of_states)
+main()
+
+
+............................................
+8. Bayesian network
+
+# Import libraries
+!pip install pgmpy
+import pgmpy.models
+import pgmpy.inference
+import networkx as nx
+import matplotlib.pyplot as plt
+#import pylab as plt
+# Create a bayesian network
+model = pgmpy.models.BayesianModel([('Burglary', 'Alarm'),
+                                      ('Earthquake', 'Alarm'),('Alarm', 'JohnCalls'),
+                                    ('Alarm', 'MaryCalls')])
+# Define conditional probability distributions (CPD)
+# Probability of burglary (True, False)
+cpd_burglary = pgmpy.factors.discrete.TabularCPD('Burglary', 2, [[0.001], [0.999]])
+# Probability of earthquake (True, False)
+cpd_earthquake = pgmpy.factors.discrete.TabularCPD('Earthquake', 2, [[0.002], [0.998]])
+# Probability of alarm going of (True, False) given a burglary and/or earthquake
+cpd_alarm = pgmpy.factors.discrete.TabularCPD('Alarm', 2, [[0.95, 0.94, 0.29, 0.001],
+                                                           [0.05, 0.06, 0.71, 0.999]],
+                                              evidence=['Burglary', 'Earthquake'],
+                                              evidence_card=[2, 2])
+# Probability that John calls (True, False) given that the alarm has sounded
+cpd_john = pgmpy.factors.discrete.TabularCPD('JohnCalls', 2, [[0.90, 0.05],
+                                                           [0.10, 0.95]],
+                                              evidence=['Alarm'],
+                                              evidence_card=[2])
+# Probability that Mary calls (True, False) given that the alarm has sounded
+cpd_mary = pgmpy.factors.discrete.TabularCPD('MaryCalls', 2, [[0.70, 0.01],
+                                                           [0.30, 0.99]],
+                                              evidence=['Alarm'],
+                                              evidence_card=[2])
+# Add CPDs to the network structure
+model.add_cpds(cpd_burglary, cpd_earthquake, cpd_alarm, cpd_john, cpd_mary)
+# Check if the model is valid, throw an exception otherwise
+model.check_model()
+# Print probability distributions
+print('Probability distribution, P(Burglary)')
+print(cpd_burglary)
+print()
+print('Probability distribution, P(Earthquake)')
+print(cpd_earthquake)
+print()
+print('Joint probability distribution, P(Alarm | Burglary, Earthquake)')
+print(cpd_alarm)
+print()
+print('Joint probability distribution, P(JohnCalls | Alarm)')
+print(cpd_john)
+print()
+print('Joint probability distribution, P(MaryCalls | Alarm)')
+print(cpd_mary)
+print()
+# Plot the model
+#nx.draw(model, with_labels=True)
+#plt.savefig('C:\\DATA\\Python-data\\bayesian-networks\\alarm.png')
+plt.show()
+print("the nodes are:",model.nodes)
+print("the edgs are:",model.edges)
+print(model.get_independencies())
+# Perform variable elimination for inference
+# Variable elimination (VE) is a an exact inference algorithm in bayesian networks
+infer = pgmpy.inference.VariableElimination(model)
+# Calculate the probability of a burglary if John and Mary calls (0: True, 1: False)
+posterior_probability = infer.query(['Burglary'], evidence={'JohnCalls': 0, 'MaryCalls': 0})
+# Print posterior probability
+print('Posterior probability of Burglary if JohnCalls(True) and MaryCalls(True)')
+print(posterior_probability)
+print()
+# Calculate the probability of alarm starting if there is a burglary and an earthquake (0: True, 1: False)
+posterior_probability = infer.query(['Alarm'], evidence={'Burglary': 0, 'Earthquake': 0})
+# Print posterior probability
+print('Posterior probability of Alarm sounding if Burglary(True) and Earthquake(True)')
+print(posterior_probability)
+print()
+
+................................................
+9. Hidden markov model
+
+!pip install hmmlearn
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from hmmlearn import hmm
+# Define the state space
+states = ["Sunny", "Rainy"]
+n_states = len(states)
+print('Number of hidden states :',n_states)
+# Define the observation space
+observations = ["Dry", "Wet"]
+n_observations = len(observations)
+print('Number of observations  :',n_observations)
+# Define the initial state distribution
+state_probability = np.array([0.6, 0.4])
+print("State probability: ", state_probability)
+
+# Define the state transition probabilities
+transition_probability = np.array([[0.7, 0.3],
+                                   [0.3, 0.7]])
+#print("\nTransition probability:\n", transition_probability)
+transition_matrix = pd.DataFrame(transition_probability,columns=states, index=states)
+print('transition_matrix')
+print(transition_matrix)
+
+# Define the observation likelihoods
+emission_probability= np.array([[0.9, 0.1],
+                                 [0.2, 0.8]])
+#print("\nEmission probability:\n", emission_probability)
+emission_matrix = pd.DataFrame(emission_probability,columns=observations, index=states)
+print('emission_matrix')
+print(emission_matrix)
+model = hmm.CategoricalHMM(n_components=n_states)
+model.startprob_ = state_probability
+model.transmat_ = transition_probability
+model.emissionprob_ = emission_probability
+# Define the sequence of observations
+observations_sequence = np.array([0, 1, 0, 1, 0, 0]).reshape(-1, 1)
+print('Observation sequence',observations_sequence)
+# Predict the most likely sequence of hidden states
+hidden_states = model.predict(observations_sequence)
+print("Most likely hidden states:", hidden_states)
+# Plot the results
+sns.set_style("whitegrid")
+plt.plot(hidden_states, '-o', label="Hidden State")
+plt.xlabel('Time step')
+plt.ylabel('Most Likely Hidden State')
+plt.title("Sunny or Rainy")
+plt.legend()
+plt.show()
